@@ -1,0 +1,67 @@
+.orderList{
+  .listArea{
+    width:100%;
+    box-sizing: border-box;
+    background-color: rgba(254, 244, 228, 0.59);
+    padding:0 20px;
+
+    .menuItem{
+      width: 100%;
+      height:130px;
+      box-sizing: border-box;
+      padding:15px;
+      border-bottom:0.4px solid rgba(0,0,0,0.5);
+      position:relative;
+      &:last-child{
+        border-bottom:none;
+      }
+      .textArea{
+        width:max-content;
+        height:100px;
+        position:relative;
+        p{
+          margin:0;
+          font-size:15px;
+        }
+        .name{
+          font-weight: 700;
+        }
+        .value{
+          color:rgba(0,0,0,0.55);
+        }
+        .sumValue{
+          position:absolute;
+          font-weight:700;
+          bottom:8px;
+          left:0;
+        }
+      }
+      .menuImg{
+        position:absolute;
+        top:15px;
+        right:15px;
+      }
+      .countBox{
+        width:120px;
+        height:25px;
+        display:flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        float:right;
+        padding:4px 7px;
+        background-color: rgba(2,2,2,0.1);
+        box-sizing: border-box;
+        img{
+          max-width: 17px;
+          cursor:pointer;
+        }
+        #cnt{
+          margin:0;
+          font-size:17px;
+          line-height:17px;
+          text-align:center;
+        }
+      }
+    }
+  }
+}

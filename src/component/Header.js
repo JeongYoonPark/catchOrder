@@ -1,22 +1,13 @@
-import "../css/header.scss";
-import {Link} from "react-router-dom";
+import "../css/header.scss"
+import {useSelector} from "react-redux";
+import Logo from "../img/Logo.png"
 
-function Header() {
+function Header(){
+    const user = useSelector((state) => state.user);
     return (
         <div className="header">
-            <div>
-                <ul>
-                    <li>
-                        <Link to="/menu">메뉴</Link>
-                    </li>
-                    <li>
-                        <Link to="/table">테이블</Link>
-                    </li>
-                    <li>
-                        <Link to="/list">구매내역</Link>
-                    </li>
-                </ul>
-            </div>
+            <img src={Logo}/>
+            Table No.{user.number}
         </div>
     )
 }
