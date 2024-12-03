@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userSlice from './slice/user'
-import cartSlice from "./slice/cart";
+import menuSlice from "./slice/menu";
 
 const store = configureStore({
     reducer:{
-        user: userSlice.reducer,
-        cart: cartSlice.reducer,
+        menu: menuSlice.reducer,
     },
+    // middleware: getDefaultMiddleware => {
+    //     getDefaultMiddleware({
+    //         serializableCheck: false,
+    //     })
+    // }
 });
-export const userActions = userSlice.actions;
-export const cartActions = cartSlice.actions;
+export const menuActions = menuSlice.actions;
 export default store;

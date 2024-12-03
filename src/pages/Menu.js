@@ -1,136 +1,109 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useParams} from "react-router-dom";
-import {userActions, cartActions} from "../redux/store";
-import {useEffect, useState} from "react";
+import {Link, useParams} from "react-router-dom";
+import {menuActions} from "../redux/store";
+import {useEffect, useReducer, useState} from "react";
 import Skewers from "../img/image 1.png"
 import XIcon from "../img/xIcon.png"
 import Trash from "../img/trash.png"
 import Plus from "../img/plus.png";
 import Contain from "../img/contain.png";
 import Minus from "../img/minus.png";
+import Uncheck from "../img/UnCheck.png";
+import Check from "../img/Check.png";
 import "../css/menu.scss"
+import axios from "axios";
 
 function Menu() {
-    const [cnt, setCnt] = useState(1);
-    const [pkey, setPKey] = useState(0);
-    const [menuName, setName] = useState("");
-    const [value, setValue] = useState("");
+    const menu = useSelector((state) => state);
     const dispatch = useDispatch();
     const params = useParams();
-    const tableIn = () => {
-        dispatch(userActions.login({number:params.id}));
-    }
-    const hide = (e) => {
-        const background = document.querySelector("#popupBG");
-        const closeBtn = document.querySelector(".xIcon");
-        const contain = document.querySelector(".contain");
-        if(e.target === background || e.target === closeBtn || e.target===contain){
-            const bg = document.getElementById("popupBG");
-            bg.classList.add("hide");
-        }
-    }
-    const unhide = (e) => {
-        const item = document.querySelector(".menuItem");
+    const [menuList, setList] = useState([])
+    const [reload, setReload] = useState(true);
+    const switching = (e) =>{
+        const checkbox = e.target.parentElement.children[0];
 
+        let num = menuList.findIndex((obj) =>{
+            return obj.menuId == checkbox.value;
+        });
 
-        if(e.target.classList[0] === 'menuItem'){
-            setPKey(e.target.children[0].value);
-            setName(e.target.children[1].children[0].innerHTML);
-            setValue(e.target.children[1].children[2].innerHTML);
-            setCnt(1);
-            const bg = document.getElementById("popupBG");
-            bg.classList.remove("hide");
+        menuList[num].checked = !menuList[num].checked;
+        checkbox.checked = menuList[num].checked;
+        const chk = e.target.parentElement.getElementsByClassName("checkBox");
+
+        for(const item of chk){
+            item.classList.remove("hidden");
         }
+        e.target.classList.add("hidden")
+
     }
-    const cntChange = (action) => {
-        if(action === "INCREASE"){
-            setCnt(cnt+1);
-        }else{
-            if(cnt>1){
-                setCnt(cnt-1);
+
+    const soldOut = (e) =>{
+        const checked = document.getElementsByClassName("menuId");
+        const box = {menuId:[]};
+
+        for(const item of checked){
+            if(item.checked){
+                box.menuId.push(Number(item.value))
             }
         }
+        const conf = window.confirm("선택한 메뉴를 매진처리하시겠습니까?");
+        if(conf){
+            axios({
+                method: "put",
+                url: "http://localhost:4000/api/menu/statusChange",
+                data: box,
+                responseType: "json",
+            }).then((res) => {
+                if(res.data.isSuccess){
+                    window.location.reload();
+                }
+            }).catch(err => console.log(err));
+        }
     }
-    const contain = (e) => {
-        const pkey = document.getElementById("menuPKey").value;
-        const name = document.getElementById("menuName").innerHTML;
 
-        dispatch(cartActions.add({id:pkey, name:name, cnt:cnt, value: value}));
-        hide(document.querySelector(".xIcon"));
-    }
     useEffect(() => {
-        tableIn();
-    },[]);
+        axios({
+            method: "GET",
+            url: "http://localhost:4000/api/menu/getMenu",
+            responseType: "json",
+        }).then((res) => {
+            setList(res.data.result);
+            dispatch(menuActions.setList(res.data.result))
+        }).catch(err => console.log(err));
+    },[reload]);
+    const menus = menuList && menuList.map((item) => {
+        return (
+            <div className="menuItem" key={item.menuId}>
+                <input type="checkbox" className="menuId" name="menuId" value={item.menuId}
+                       defaultChecked={item.checked}/>
+                <img src={Check} className="checkBox hidden" onClick={switching}/>
+                <img src={Uncheck} className="checkBox" onClick={switching}/>
+                <span className={item.status == "매진" ? "status red" : "status green"}>{item.status}</span>
+                <div>
+                    <span className="name">{item.menuName}</span>
+                    <br/>
+                    <span className="price">{item.menuPrice}원</span>
+                </div>
+                <img src={item.imgUrl}/>
+            </div>
+        )
+    })
+
 
     return (
         <div className="menu">
-            <div id="popupBG" className="hide" onClick={hide}>
-                <div className="popup">
-                    <input type="hidden" id="menuPKey" value={pkey}/>
-                    <img className="xIcon" src={XIcon} alt="" onClick={hide}/>
-                    <br/>
-                    <div className="menuArea">
-                        <img src={Skewers} alt=""/>
-                        <div className="textArea">
-                            <span className="row" id="menuName">{menuName}</span>
-                            <span className="row">
-                                <span className="line">가격</span>
-                                {value}원
-                            </span>
-                            <span className="row">
-                                <span className="line">수량</span>
-                                <div className="countBox">
-                                    <img src={(cnt>1) ? Minus : Trash} onClick={() => cntChange("DECREASE")}/>
-                                    <span id="cnt">{cnt}</span>
-                                    <img src={Plus} onClick={() => cntChange("INCREASE")}/>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-                    <img className="contain" src={Contain} onClick={contain}/>
-                </div>
-            </div>
+            <Link to="/Menu/Regist">
+                <div className="btn registBtn">메뉴등록</div>
+            </Link>
             <div className="menuList">
-                <div className="menuItem" onClick={unhide}>
-                    <input type="hidden" className="menuId" value="1"/>
-                    <div>
-                        <span className="name">파닭꼬치</span>
-                        <br/>
-                        <span className="price">2000</span>원
-                    </div>
-                    <img src={Skewers}/>
-                </div>
-                <div className="menuItem" onClick={unhide}>
-                    <input type="hidden" className="menuId" value="2"/>
-                    <div>
-                        <span className="name">해장라면</span>
-                        <br/>
-                        <span className="price">8000</span>원
-                    </div>
-                    <img src={Skewers}/>
-                </div>
-                <div className="menuItem" onClick={unhide}>
-                    <input type="hidden" className="menuId" value="3"/>
-                    <div>
-                        <span className="name">라면</span>
-                        <br/>
-                        <span className="price">6000</span>원
-                    </div>
-                    <img src={Skewers}/>
-                </div>
-                <div className="menuItem" onClick={unhide}>
-                    <input type="hidden" className="menuId" value="4"/>
-                    <div>
-                        <span className="name">석쇠불고기</span>
-                        <br/>
-                        <span className="price">12000</span>원
-                    </div>
-                    <img src={Skewers}/>
-                </div>
+                {menus}
 
             </div>
+            <div className="btn soldOutBtn" onClick={soldOut}>
+                매진처리
+            </div>
         </div>
-    )
-}
+                    )
+                }
 
 export default Menu;

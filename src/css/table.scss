@@ -1,4 +1,4 @@
-.orderList{
+.cart{
   width: 100%;
   min-height: 79vh;
   overflow: scroll;
@@ -32,7 +32,20 @@
         float:right;
         cursor:pointer;
       }
-
+      .btnArea{
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+        .btn{
+          width:87px;
+          height:40px;
+          border-radius:8px;
+          background-color: rgba(44,44,44,0.8);
+          line-height: 40px;
+          text-align: center;
+          color:#ffffff;
+        }
+      }
     }
   }
   .menuArea{
@@ -42,18 +55,6 @@
     display:flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    .red{
-      color:#FF0000;
-    }
-    .green{
-      color:#00FF00;
-    }
-    .blue{
-      color:#0000FF;
-    }
-    .black{
-      color:#000000;
-    }
     .table{
       width:100px;
       height:100px;
@@ -63,7 +64,15 @@
       line-height: 170px;
       font-size: 8px;
       position:relative;
-
+      &.red{
+        color:#FF0000;
+      }
+      &.green{
+        color:#00FF00;
+      }
+      &.blue{
+        color:#0000FF;
+      }
       .tableId{
         line-height: 0;
         position: absolute;
